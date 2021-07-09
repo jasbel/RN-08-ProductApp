@@ -1,4 +1,4 @@
-import { Usuario } from "../interfaces/appInterfaces";
+import {Usuario} from '../interfaces/appInterfaces';
 
 export interface AuthState {
   status: 'checking' | 'authenticated' | 'not-authenticated';
@@ -8,28 +8,31 @@ export interface AuthState {
 }
 
 export type AuthAction =
-  | {type: 'signUp', payload: {token: string, user: Usuario}}
-  | {type: 'addError', payload: string}
+  | {type: 'signUp'; payload: {token: string; user: Usuario}}
+  | {type: 'addError'; payload: string}
   | {type: 'removeError'}
   | {type: 'notAuthenticated'}
-  | {type: 'logout' }
+  | {type: 'logout'};
 
-export const authReducer = (state: AuthState, action: AuthAction) : AuthState =>{
+export const authReducer = (
+  state: AuthState,
+  action: AuthAction,
+): AuthState => {
   switch (action.type) {
-    case "addError":
+    case 'addError':
       return {
         ...state,
         user: null,
         status: 'not-authenticated',
         token: null,
-        errorMessage: action.payload
+        errorMessage: action.payload,
       };
-    case "removeError":
+    case 'removeError':
       return {
         ...state,
         errorMessage: '',
       };
-    case "signUp":
+    case 'signUp':
       return {
         ...state,
         errorMessage: '',
@@ -37,7 +40,7 @@ export const authReducer = (state: AuthState, action: AuthAction) : AuthState =>
         token: action.payload.token,
         user: action.payload.user,
       };
-    case "signUp":
+    case 'signUp':
       return {
         ...state,
         errorMessage: '',
@@ -45,8 +48,8 @@ export const authReducer = (state: AuthState, action: AuthAction) : AuthState =>
         token: action.payload.token,
         user: action.payload.user,
       };
-    case "logout":
-    case "notAuthenticated":
+    case 'logout':
+    case 'notAuthenticated':
       return {
         ...state,
         errorMessage: '',
@@ -54,11 +57,8 @@ export const authReducer = (state: AuthState, action: AuthAction) : AuthState =>
         token: null,
         user: null,
       };
-  
+
     default:
-      break;
+      return state;
   }
-}
-
-
-
+};

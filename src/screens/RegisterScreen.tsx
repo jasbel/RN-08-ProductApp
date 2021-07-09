@@ -1,27 +1,52 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React from 'react';
-import {Keyboard, KeyboardAvoidingView, Platform, TextInput} from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useContext} from 'react';
+import {
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import Background from '../components/Background';
 import WhiteLogo from '../components/WhiteLogo';
 import {useForm} from '../hooks/useForm';
-import { loginStyles } from '../theme/loginTheme';
+import {loginStyles} from '../theme/loginTheme';
+import {AuthContext} from '../context/AuthContext';
+import {useEffect} from 'react';
 
-interface Props extends StackScreenProps<any, any>{}
+interface Props extends StackScreenProps<any, any> {}
 
-const RegisterScreen = ({navigation}:Props) => {
-  const {name, email,password,onChange} = useForm({
+const RegisterScreen = ({navigation}: Props) => {
+  const {signUp, errorMessage, removeError} = useContext(AuthContext);
+  const {name, email, password, onChange} = useForm({
     name: '',
-    email:'',
-    password: ''
+    email: '',
+    password: '',
   });
 
   const onRegister = () => {
     console.log({email, password});
     Keyboard.dismiss();
-  }
-  
+    signUp({
+      nombre: name,
+      correo: email,
+      password,
+    });
+  };
+
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+
+    Alert.alert('REgistro incorrecto', errorMessage, [
+      {
+        text: 'OK',
+        onPress: removeError,
+      },
+    ]);
+  }, [errorMessage]);
+
   return (
     <>
       {/* BAckground */}
@@ -48,7 +73,7 @@ const RegisterScreen = ({navigation}:Props) => {
             selectionColor="white"
             autoCapitalize="words"
             autoCorrect={false}
-            onChangeText={(val)=>onChange(val,'name')}
+            onChangeText={val => onChange(val, 'name')}
             value={name}
             onSubmitEditing={onRegister}
           />
@@ -66,7 +91,7 @@ const RegisterScreen = ({navigation}:Props) => {
             selectionColor="white"
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(val)=>onChange(val,'email')}
+            onChangeText={val => onChange(val, 'email')}
             value={email}
             onSubmitEditing={onRegister}
           />
@@ -82,7 +107,7 @@ const RegisterScreen = ({navigation}:Props) => {
             keyboardType="email-address"
             underlineColorAndroid="white"
             selectionColor="white"
-            onChangeText={(val)=>onChange(val,'password')}
+            onChangeText={val => onChange(val, 'password')}
             value={password}
             onSubmitEditing={onRegister}
             secureTextEntry
@@ -92,7 +117,7 @@ const RegisterScreen = ({navigation}:Props) => {
           <View style={loginStyles.buttonWrap}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => console.log('login click')}
+              onPress={onRegister}
               style={loginStyles.button}>
               <Text style={loginStyles.buttonText}>Login</Text>
             </TouchableOpacity>
@@ -100,20 +125,19 @@ const RegisterScreen = ({navigation}:Props) => {
 
           {/* Crear una nueva cuenta */}
           {/* <View style={loginStyles.newUserWrap}> */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => navigation.replace('LoginScreen')}
-              style={{
-                ...loginStyles.buttonReturn
-              }}
-              >
-              <Text style={loginStyles.buttonText}>Login</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.replace('LoginScreen')}
+            style={{
+              ...loginStyles.buttonReturn,
+            }}>
+            <Text style={loginStyles.buttonText}>Registrar</Text>
+          </TouchableOpacity>
           {/* </View> */}
         </View>
       </KeyboardAvoidingView>
     </>
   );
-}
+};
 
-export default RegisterScreen
+export default RegisterScreen;

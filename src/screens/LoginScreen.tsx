@@ -1,30 +1,47 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useContext } from 'react';
-import {Keyboard, KeyboardAvoidingView, Platform, TextInput} from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useContext} from 'react';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 import Background from '../components/Background';
 import WhiteLogo from '../components/WhiteLogo';
 import {useForm} from '../hooks/useForm';
 import {loginStyles} from '../theme/loginTheme';
-import { AuthContext } from '../context/AuthContext';
+import {AuthContext} from '../context/AuthContext';
+import {useEffect} from 'react';
+import {Alert} from 'react-native';
 
-interface Props extends StackScreenProps<any, any>{}
+interface Props extends StackScreenProps<any, any> {}
 
-const LoginScreen = ({navigation}:Props) => {
+const LoginScreen = ({navigation}: Props) => {
+  const {signIn, errorMessage, removeError} = useContext(AuthContext);
 
-  const {signIn} = useContext(AuthContext)
-
-  const {email,password,form, onChange} = useForm({
-    email:'',
-    password: ''
+  const {email, password, form, onChange} = useForm({
+    email: '',
+    password: '',
   });
+
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+
+    Alert.alert('Login incorrecto', errorMessage, [
+      {
+        text: 'OK',
+        onPress: removeError,
+      },
+    ]);
+  }, [errorMessage]);
 
   const onLogin = () => {
     console.log({email, password});
     Keyboard.dismiss();
 
-    signIn({correo: email, password})
+    signIn({correo: email, password});
   };
 
   return (
@@ -54,7 +71,7 @@ const LoginScreen = ({navigation}:Props) => {
             selectionColor="white"
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(val)=>onChange(val,'email')}
+            onChangeText={val => onChange(val, 'email')}
             value={email}
             onSubmitEditing={onLogin}
           />
@@ -70,7 +87,7 @@ const LoginScreen = ({navigation}:Props) => {
             keyboardType="email-address"
             underlineColorAndroid="white"
             selectionColor="white"
-            onChangeText={(val)=>onChange(val,'password')}
+            onChangeText={val => onChange(val, 'password')}
             value={password}
             onSubmitEditing={onLogin}
             secureTextEntry
