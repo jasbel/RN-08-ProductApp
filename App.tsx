@@ -1,29 +1,31 @@
 import 'react-native-gesture-handler';
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import Navigator from './src/navigator/Navigator';
-import { AuthProvider } from './src/context/AuthContext';
+import {AuthProvider} from './src/context/AuthContext';
+import {ProductsProvider} from './src/context/ProductsContext';
 
 interface PropsState {
-  children: JSX.Element | JSX.Element[]
+  children: JSX.Element | JSX.Element[];
 }
 
-const AppState = ({children}:PropsState)=>{
-  return(
+const AppState = ({children}: PropsState) => {
+  return (
     <AuthProvider>
-      {children}
+      <ProductsProvider>{children}</ProductsProvider>
     </AuthProvider>
-  )
-}
+  );
+};
 
 const App = () => {
   return (
-    <NavigationContainer>{/* Rest of your app code */}
+    <NavigationContainer>
+      {/* Rest of your app code */}
       <AppState>
         <Navigator />
       </AppState>
     </NavigationContainer>
-  )
-}
+  );
+};
 
-export default App
+export default App;
