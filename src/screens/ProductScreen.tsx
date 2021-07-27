@@ -9,6 +9,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import useCategories from '../hooks/useCategories';
 import {useForm} from '../hooks/useForm';
 import {ProductsContext} from '../context/ProductsContext';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 interface Props
   extends StackScreenProps<ProductsStackParams, 'ProductScreen'> {}
@@ -17,8 +18,10 @@ const ProductScreen = (props: Props) => {
   const {route, navigation} = props;
   const {id = '', name = ''} = route.params;
 
+  const [tempUri, setTempUri] = useState<string>();
+
   const {categories} = useCategories();
-  const {loadProductById, addProduct, updateProduct} =
+  const {loadProductById, addProduct, updateProduct, uploadImage} =
     useContext(ProductsContext);
 
   const {_id, categoriaId, nombre, img, onChange, form, setFormValue} = useForm(
@@ -68,6 +71,37 @@ const ProductScreen = (props: Props) => {
     }
   };
 
+  const takePhoto = () => {
+    launchCamera(
+      {
+        mediaType: 'photo',
+        quality: 0.5,
+      },
+      resp => {
+        if (resp.didCancel) return;
+        if (!resp.assets) return;
+
+        setTempUri(resp.assets.uri);
+        uploadImage(resp, _id);
+      },
+    );
+  };
+  const takePhotoFromGallery = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        quality: 0.5,
+      },
+      resp => {
+        if (resp.didCancel) return;
+        if (!resp.assets) return;
+
+        setTempUri(resp.assets.uri);
+        uploadImage(resp, _id);
+      },
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -100,25 +134,19 @@ const ProductScreen = (props: Props) => {
               justifyContent: 'center',
               marginTop: 10,
             }}>
-            <Button
-              title="Camara"
-              //TODO: Por Hacer
-              onPress={() => {}}
-              color="#5856D6"
-            />
+            <Button title="Camara" onPress={takePhoto} color="#5856D6" />
 
             <View style={{width: 10}} />
 
             <Button
               title="Galeria"
-              //TODO: Por Hacer
-              onPress={() => {}}
+              onPress={takePhotoFromGallery}
               color="#5856D6"
             />
           </View>
         )}
 
-        {img.length > 0 && (
+        {img.length > 0 && !tempUri && (
           <Image
             source={{uri: img}}
             style={{
